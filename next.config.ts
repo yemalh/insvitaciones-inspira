@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  // html-to-image and jspdf run client-side only; no special config needed
+}
 
-export default nextConfig;
+export default nextConfig
