@@ -162,10 +162,17 @@ export default function AdminPanel() {
   }
 
   // --- Stats ---
-  const total = attendees.filter((a) => a.status !== 'cancelado').length
+  const active = (slot?: string) =>
+    attendees.filter((a) => a.status !== 'cancelado' && (slot ? a.event_time === slot : true))
   const attended = attendees.filter((a) => a.status === 'asistio').length
   const cancelled = attendees.filter((a) => a.status === 'cancelado').length
-  const available = Math.max(0, eventConfig.maxCapacity - total)
+
+  const slots = eventConfig.timeSlots
+  const slot1Count = active(slots[0]).length
+  const slot2Count = active(slots[1]).length
+  const slot1Available = Math.max(0, eventConfig.maxCapacity - slot1Count)
+  const slot2Available = Math.max(0, eventConfig.maxCapacity - slot2Count)
+  const total = slot1Count + slot2Count
 
   // --- Filtered list ---
   const filtered = attendees.filter((a) => {
@@ -207,11 +214,52 @@ export default function AdminPanel() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <StatCard label="Confirmados" value={total} />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <StatCard label="Total confirmados" value={total} />
           <StatCard label="Asistieron" value={attended} />
-          <StatCard label="Disponibles" value={available} sub={`de ${eventConfig.maxCapacity}`} />
           <StatCard label="Cancelados" value={cancelled} />
+        </div>
+
+        {/* Per-slot stats */}
+        <div className="grid grid-cols-2 gap-3 mb-8">
+          {slots.map((slot, i) => {
+            const count = i === 0 ? slot1Count : slot2Count
+            const avail = i === 0 ? slot1Available : slot2Available
+            return (
+              <div
+                key={slot}
+                className="rounded-xl p-4"
+                style={{ backgroundColor: '#faf8f5', border: '1px solid #dfd0b3' }}
+              >
+                <p className="text-xs tracking-widest uppercase mb-2" style={{ color: '#94714a' }}>
+                  Horario {slot}
+                </p>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-2xl font-light" style={{ color: '#1f4433', fontFamily: 'Georgia, serif' }}>{count}</p>
+                    <p className="text-xs" style={{ color: '#94714a' }}>confirmados</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-light" style={{ color: avail === 0 ? '#c9823a' : '#2d6b52', fontFamily: 'Georgia, serif' }}>{avail}</p>
+                    <p className="text-xs" style={{ color: '#94714a' }}>disponibles</p>
+                  </div>
+                </div>
+                {/* Progress bar */}
+                <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#dfd0b3' }}>
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${Math.min(100, (count / eventConfig.maxCapacity) * 100)}%`,
+                      backgroundColor: avail === 0 ? '#c9823a' : '#2d6b52',
+                    }}
+                  />
+                </div>
+                <p className="text-xs mt-1 text-right" style={{ color: '#b08b5e' }}>
+                  {count} / {eventConfig.maxCapacity}
+                </p>
+              </div>
+            )
+          })}
         </div>
 
         {/* Search */}

@@ -95,15 +95,16 @@ export async function POST(req: NextRequest) {
     const { full_name, phone, email, time_slot } = parsed.data
     const db = createServerSupabase()
 
-    // Check capacity
-    const { count } = await db
+    // Check capacity per slot
+    const { count: slotCount } = await db
       .from('attendees')
       .select('*', { count: 'exact', head: true })
+      .eq('event_time', time_slot)
       .neq('status', 'cancelado')
 
-    if (count !== null && count >= eventConfig.maxCapacity) {
+    if (slotCount !== null && slotCount >= eventConfig.maxCapacity) {
       return NextResponse.json(
-        { error: 'Lo sentimos, el cupo está lleno.' },
+        { error: `Lo sentimos, el horario de ${time_slot} está lleno. Elige el otro horario.` },
         { status: 409 }
       )
     }

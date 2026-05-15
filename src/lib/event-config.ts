@@ -5,7 +5,7 @@ export const eventConfig = {
   eventTime: 'Ver horario seleccionado',
   timeSlots: ['8:00 AM', '9:30 AM'],
   location: 'Álamos Roof, Querétaro',
-  maxCapacity: 30,
+  maxCapacity: 30, // por horario
   contactWhatsApp: '+524461073493',
   welcomeText:
     'Tu presencia hace posible este espacio de respiración, meditación y contemplación.',
