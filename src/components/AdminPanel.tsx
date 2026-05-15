@@ -260,6 +260,14 @@ export default function AdminPanel() {
                         >
                           {statusLabels[a.status as AttendeeStatus] || a.status}
                         </span>
+                        {a.event_time && (
+                          <span
+                            className="px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{ backgroundColor: '#f0ece4', color: '#2d6b52', border: '1px solid #dfd0b3' }}
+                          >
+                            {a.event_time}
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm font-medium truncate" style={{ color: '#1f4433' }}>
                         {a.full_name}
